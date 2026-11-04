@@ -1,0 +1,60 @@
+{
+  "name": "musicbuddy",
+  "version": "1.0.0",
+  "private": true,
+  "main": "electron/dist/main.js",
+  "scripts": {
+    "dev": "concurrently \"cd backend && npm run dev\" \"cd frontend && npm run dev\"",
+    "build": "cd frontend && npm run build",
+    "build:all": "npm run build && cd backend && npm run build",
+    "web": "npm run build:all && node backend/dist/server.js",
+    "web:quick": "node backend/dist/server.js",
+    "install:all": "cd backend && npm install && cd ../frontend && npm install",
+    "electron:dev": "NODE_ENV=development npx tsc -p electron/tsconfig.json && npx electron .",
+    "electron:build": "rm -rf release/* .DS_Store release/.DS_Store && npm run build && cd backend && npm run build && cd .. && npx tsc -p electron/tsconfig.json && npx electron-builder",
+    "electron:pack": "rm -rf release/* .DS_Store release/.DS_Store && npm run build && cd backend && npm run build && cd .. && npx tsc -p electron/tsconfig.json && npx electron-builder --dir"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "concurrently": "^9.0.0",
+    "electron": "^41.2.2",
+    "electron-builder": "^26.8.1",
+    "typescript": "^6.0.3",
+    "wait-on": "^9.0.5"
+  },
+  "build": {
+    "appId": "com.musicbuddy.desktop",
+    "productName": "MusicBuddy",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "electron/dist/**/*",
+      "frontend/dist/**/*",
+      "backend/**/*",
+      "!backend/.env",
+      "!backend/data/**",
+      "!backend/src/**",
+      "!backend/tsconfig.json",
+      "!backend/node_modules/.cache/**",
+      ".env.example",
+      "package.json"
+    ],
+    "asarUnpack": [
+      "backend/**/*",
+      "frontend/dist/**/*"
+    ],
+    "mac": {
+      "icon": "electron/icons/icon.icns",
+      "target": [
+        {
+          "target": "dir",
+          "arch": [
+            "arm64"
+          ]
+        }
+      ],
+      "category": "public.app-category.music"
+    }
+  }
+}
