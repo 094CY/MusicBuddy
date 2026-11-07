@@ -1,5 +1,6 @@
 {
   "name": "musicbuddy",
+  "author": "094CY",
   "version": "1.0.0",
   "private": true,
   "main": "electron/dist/main.js",

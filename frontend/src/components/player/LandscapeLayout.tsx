@@ -139,7 +139,7 @@ export default function LandscapeLayout(props: LandscapeLayoutProps) {
   });
   const fsProgressPercent = duration > 0 ? (currentTime / duration) * 100 : 0;
 
-  // 歌词滚动：改为 auto（瞬间到位）+ rAF 等 DOM 稳定后再滚，与字体高亮过渡视觉协同
+  // 歌词滚动：auto（瞬间到位）+ rAF 等 DOM 稳定后再滚，与字体高亮过渡视觉协同
   useEffect(() => {
     if (!lyricRef.current || fsActiveLyricIndex < 0) return;
     const el = lyricRef.current.children[fsActiveLyricIndex] as HTMLElement | undefined;

@@ -6,6 +6,17 @@ import type { Song, SongAlternative } from '../types';
 const FADE_DURATION = 300;
 const MAX_SKIP = 3;
 
+/**
+ * play() 可能被浏览器自动播放策略拒绝，或因切歌 / 卸载被打断。
+ * 这类失败不阻断主流程，但必须留下可排查的原因，不得静默吞掉。
+ */
+function playSafely(audio: HTMLAudioElement, reason: string): void {
+  audio.play().catch((err: unknown) => {
+    console.warn(`[AudioPlayer] play 未生效（${reason}）`, err);
+  });
+}
+
+
 /** 歌曲身份：平台 + id + 歌名 + 艺人，用于歌词等衍生数据的竞态判断 */
 function currentSongKey(song: Song | null): string {
   return song ? `${song.platform || 'netease'}|${song.id}|${song.name}|${song.artist}` : '';
@@ -81,7 +92,7 @@ export default function AudioPlayer() {
     if (lastLoadedSongKey.current === songKey) {
       if (audioRef.current && audioRef.current.src) {
         audioRef.current.currentTime = 0;
-        if (usePlayerStore.getState().isPlaying) audioRef.current.play().catch(() => {});
+        if (usePlayerStore.getState().isPlaying) playSafely(audioRef.current, '重复选中当前歌曲');
       }
       return;
     }
@@ -91,7 +102,10 @@ export default function AudioPlayer() {
         audioRef.current.pause();
         audioRef.current.removeAttribute('src');
         audioRef.current.load();
-      } catch { /* ignore */ }
+      } catch (err) {
+        // 旧音频元素可能已卸载或 src 已清空；清理失败不影响后续加载
+        console.warn('[AudioPlayer] 清理旧音频资源失败，可忽略', err);
+      }
     }
 
     const applyUrl = async (url: string) => {
@@ -204,7 +218,7 @@ export default function AudioPlayer() {
       if (document.visibilityState !== 'visible') return;
       const audio = audioRef.current;
       const latest = usePlayerStore.getState();
-      if (audio && latest.isPlaying && audio.paused && audio.src) audio.play().catch(() => {});
+      if (audio && latest.isPlaying && audio.paused && audio.src) playSafely(audio, '页面恢复可见');
     };
     document.addEventListener('visibilitychange', handleVisibility);
     window.addEventListener('focus', handleVisibility);
@@ -260,11 +274,13 @@ export default function AudioPlayer() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'play_complete', song: { id: song.id, name: song.name, artist: song.artist } }),
-      }).catch(() => {});
+      }).catch((err: unknown) => {
+        console.warn('[AudioPlayer] 播放完成反馈上报失败（不影响播放）', err);
+      });
     }
     if (playMode === 'single' && audioRef.current) {
       audioRef.current.currentTime = 0;
-      audioRef.current.play().catch(() => {});
+      playSafely(audioRef.current, '单曲循环');
       return;
     }
     playNext();

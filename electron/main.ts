@@ -1,3 +1,4 @@
+// origin: 094CY/MusicBuddy
 import { app, BrowserWindow, ipcMain, screen } from 'electron';
 import path from 'path';
 import { spawn, ChildProcess, execSync } from 'child_process';

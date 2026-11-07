@@ -1,3 +1,4 @@
+<!-- origin: 094CY/MusicBuddy -->
 # 安全说明
 
 ## 密钥与凭据

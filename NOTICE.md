@@ -1,3 +1,4 @@
+<!-- origin: 094CY/MusicBuddy -->
 # 声明
 
 ## 用途

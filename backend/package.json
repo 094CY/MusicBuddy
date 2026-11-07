@@ -1,5 +1,6 @@
 {
   "name": "musicbuddy-backend",
+  "author": "094CY",
   "version": "1.0.0",
   "description": "MusicBuddy backend - Express API",
   "main": "dist/server.js",

@@ -604,7 +604,11 @@ export default function PlayerPage({ preferences, onOpenSettings }: PlayerPagePr
             }
             return best;
           })
-          .catch(() => null);
+          .catch((err: unknown) => {
+            // 单个候选搜索失败不放弃整轮电台；记录原因，避免失败被当成「没有结果」
+            console.warn('[PlayerPage] 电台候选搜索失败，跳过该结果', err);
+            return null;
+          });
       });
 
       const allResults = await Promise.all(trackedSearches);

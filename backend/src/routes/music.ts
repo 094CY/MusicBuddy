@@ -572,7 +572,7 @@ router.get('/multi-url', async (req, res) => {
         console.error('[multi-url/qq]', err.message);
       }
       // 不再返回缺少 vkey 的兜底试听 URL（必然 403，会让前端连续跳过 3 首）
-      // 改为返回空 url，由前端明确走「换源 / 重试」流程
+      // 返回空 url，由前端走「换源 / 重试」流程
     } else if (platform === 'youtube') {
       // YouTube 使用 yt-dlp 获取音频流 URL（异步 + 缓存）
       url = await getYtdlpUrl(String(id), forceRefresh);
